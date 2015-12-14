@@ -1,5 +1,5 @@
 function [levels, histogram, bins] = statelevels (x, nbins, method, bounds) // defing function
-    
+    // jitendra singh
     // This function estimate statelevels of real vector X via histogram.
     // Calling Sequence
     // levels=statelevels(x, nbins, method, bounds)
