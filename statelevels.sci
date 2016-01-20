@@ -1,15 +1,17 @@
-function [levels, histogram, bins] = statelevels (x, nbins, method, bounds) // defining function
+function [levels, histogram, bins] = statelevels (x, varargin) // defining function
     
     // This function estimate statelevels of real vector X via histogram.
     // Calling Sequence
     // levels=statelevels(x, nbins, method, bounds)
     // [levels histogram]=statelevels(x, nbins, method, bounds)
-    // [levels histogram bins]=statelevels(x, nbins, method, bounds)    
+    // [levels histogram bins]=statelevels(x, nbins, method, bounds)  
+    // [levels histogram bins]=statelevels(x, nbins, method, bounds, 'fig', On or Off)  
     // Parameters
     // x: real vector
     // nbins: number of histogram bins to use in the histogram as a positive scalar, where the default value is 100
     // method: method to estimate the statelevels using specified METHOD as one of 'mean' or 'mode', where the  default value is 'mode'
     // bounds: specify the lower and upper bound for the histogram as a two-element row vector
+    // fig: specify the logical input value to display figure as one of 'on' or 'off', where the default input in 'off'.
     // levels: return lower and upper level values
     // histogram: return histogram values
     // bins: return binlevels values
@@ -28,45 +30,121 @@ if length(x) < 2 then // checking the length of input datasat
   error('X must be a vector with more than one element.'); // if length of X is less 2, it will give error
 end
 
+if length(varargin)>5 then
+    error('Wrong number on input arguments.')
+end
 
-if argn(2) == 1 then // checking the no of input variables
-    nbins=100;   // defining the default value of no of bins
+if length(varargin)==0 then
+     nbins=100;   // defining the default value of no of bins
     method='mode'; // defing the defualt method 'mode'
-    bounds=[min(x) max(x)];
+    bounds=[min(x) max(x)]; 
+    fig='off';
+end
+
+
+if length(varargin)==1 then
+ 
+    if varargin(1) =='fig' then
+        error('input argument fig required a values.')
+    else
+           nbins=varargin(1);
+ method='mode'; // defing the defualt method 'mode'
+    bounds=[min(x) max(x)]; 
+    fig='off'; 
+        
+        end
+end
+
+
+if length(varargin)==2 then
+    nbins=100;
+     fig='off'; 
+    bounds=[min(x) max(x)];    
+    method='mode';
+    if varargin(1)=='fig'
+        fig=varargin(2)
+    elseif varargin(2)=='fig' then                      
+    nbins=varargin(1);
+    error ('input argument fig required a values.')
+    
+elseif varargin(1)~='fig' & varargin(2)~='on' | varargin(2)~='off' then
+    nbins=varargin(1);
+    method=varargin(2);
     
 end
+ 
+end
+
+if length(varargin)==3 then
+    nbins=varargin(1);
+    method='mode';
+    bounds=[min(x) max(x)];
+    fig='off';    
+    if varargin(2)== 'fig' then
+        fig=varargin(3)
+    elseif varargin(3)=='fig' then   
+        error ('input argument fig required a values.')
+        else 
+        method=varargin(2);
+        bounds=varargin(3);
+    end 
+       
+    
+    end       
+
+
+if length(varargin)==4 then
+    nbins=varargin(1);
+    method=varargin(2);
+    bounds=[min(x) max(x)];
+    fig='off';
+    
+     if varargin(3)=='fig' then
+         fig=varargin(4)
+     elseif varargin(4)=='fig' then
+          error ('input argument fig required a values.')
+      elseif varargin(4)~='fig' then
+          error('Unexpected input argument.')
+          else
+         bounds=varargin(3);
+     end
+ 
+end
+
+
+if length(varargin)==5 then
+     nbins=varargin(1);
+    method=varargin(2);
+    bounds=varargin(3);
+    if varargin(4)=='fig' then
+        fig=varargin(5);
+    else
+        error('Wrong input argument.')
+    end
+
+end
+
 
  if type(nbins)==10 then  // checking, if nbins if numeric aur charactr
     error ('Expected NBINS to be one of these types: double, Instead its type was char.');
     end  
-
 if pmodulo(nbins,1)==0 then // checking, if nbins is integert or not
 else
     error ('Size inputs must be integers.')
 end
-
 
 if length(nbins)~=1 then
     error('Expected NBINS to be a scalar.')
 end
 
 
-  
-if argn(2) == 2 then
-    method='mode';
-    bounds=[min(x) max(x)];
-end
 
       if method == 'mode' | method == 'mean' then  // method should be either mean or mode
         else 
      error('Expected METHOD to match one of these strings: mean or mode');
            end
            
-           
- if argn(2)==3 then  
-     bounds=[min(x) max(x)];        
 
- end
  
  
  if type(bounds)==10 then  // checking, if nbins if numeric aur charactr
@@ -94,9 +172,13 @@ if  bounds(2)==0 & bounds (1)==0 then
  upper=0;
 end
  
+  if fig == 'off' | fig == 'on' then  // method should be either mean or mode
+        else 
+     error('Expected fig to match one of these strings: on or off');
+           end
 
  
-// disp(bounds) 
+
 
   
   
@@ -165,8 +247,10 @@ end
 
  histogram=histo;  
       bins = lower + ((1:nbins) - 0.5)' * (upper - lower) / nbins; 
+      
 
-  if argn(1) == 1 then // if the defined output is only 1, the it will provide the graphical representation of                          //levels
+
+  if fig=='on' then // if the defined output is only 1, the it will provide the graphical representation of                          //levels
       
       if levels(1)=='NaN' | levels(2)=='NaN' then
           subplot(2,1,1)  

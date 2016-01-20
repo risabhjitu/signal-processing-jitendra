@@ -1,27 +1,31 @@
 function [midcrossvalue, midreference, levels, t, tolerance, Tinput]= midcross(x, varargin)
     
-     
+    
     // This function estimate midcross values of real vector X.
     // Calling Sequence
     // midcrossvalue=midcross(x)
+    // midcrossvalue=midcross(x, Fs)
     // midcrossvalue=midcross(x, t)
     // midcrossvalue=midcross(x, t, 'MidPercentReferenceLevels', N )
     // midcrossvalue=midcross(x, t, 'Tolerance', M)
     // midcrossvalue=midcross(x, t,'StateLevels', O)
     // [midcrossvalue midreference]=midcross(x)
+    //  [midcrossvalue midreference]=midcross(x, Fs)
     // [midcrossvalue midreference]=midcross(x, t)
     // [midcrossvalue midreference]= midcross(x, t, 'MidPercentReferenceLevel', N )
     // [midcrossvalue midreference]= midcross(x, t, 'Tolerance', M)
     // [midcrossvalue midreference]= midcross(x, t,'StateLevels', O)
-    // 
+    // [midcrossvalue midreference]= midcross(x, t,'StateLevels', O, 'fig', on or off)
     //  
     // Parameters
     // x: real vector.
+    // Fs: specifies the sample rate, Fs, as a positive   scalar, where the first sample instant corresponds to a time of zero.
     // t: defiene instant sample time t as vector with same length of x, or specifies the sample rate, t, as a positive scalar
-    //MidPercentReferenceLevels: specify the midpercentreferenceleves as a percentage, default value of N is 50.
-    //Tolerance: define the tolerance value as real scaler value, where default value of M is 2.0.
+    // MidPercentReferenceLevels: specify the midpercentreferenceleves as a percentage, default value of N is 50.
+    // Tolerance: define the tolerance value as real scaler value, where default value of M is 2.0.
     // StateLevels:  define the lower and upper state levels as two element real vector. 
-    //midcrossvalues: return the midcross values
+    // fig: specify the logical input value to display figure as one of 'on' or 'off', where the default input in 'off'.
+    // midcrossvalues: return the midcross values
     // midreference: return the midrefence values.
     // levels: return statelevels values.
     // t: return the instant sample time.
@@ -41,7 +45,7 @@ function [midcrossvalue, midreference, levels, t, tolerance, Tinput]= midcross(x
   error('X must be a vector with more than one element.'); // if length of X is less 2, it will give error
 end
 
- if length(varargin) >7 then // checking the length of input datasat
+ if length(varargin) >9 then // checking the length of input datasat
   error('Unexpected input/To many input'); // if length of X is less 2, it will give error
 end
 
@@ -51,6 +55,7 @@ if length(varargin)==0 then
      [levels hist]=statelevels(x); // run statelevels function before running this function
      midpercentval=50;
      tolerance=2;
+     fig='off'
 
 end
 
@@ -89,7 +94,7 @@ end
 end
 
 
-if length(index)>3 then
+if length(index)>5 then
     error('Unexpected argument.')
 end
 
@@ -129,27 +134,27 @@ end
 
 
 
-
-
-
-
-
 [levels hist]=statelevels(x);
  midpercentval=50;
      tolerance=2;
-
-
+     fig='OFF';
 
 
 if (~isempty(index)) then
         for j=1:length(index)
-            select varargin(index(j))
-                case {'StateLevels'}
+            
+            select convstr(varargin(index(j)),'u')
+                
+                case {'STATELEVELS'}
                    //////
                  if length(varargin) <=index(j) then
                       error(strcat(['parameter StateLevels required a value']));
+                  end
+                  
+                  if type(varargin(index(j)+1))==1 then
+                      levels=varargin(index(j)+1); 
                       
-                   elseif type(varargin(index(j)+1))==10 & varargin(index(j)+1)=='MidPercentReferenceLevel' |  varargin(index(j)+1)== 'Tolerance' then
+                   elseif type(varargin(index(j)+1))==10 & convstr(varargin(index(j)+1), 'u')=='MIDPERCENTREFERENCELEVEL' |  convstr(varargin(index(j)+1),'u')== 'TOLERANCE' | convstr(varargin(index(j)+1), 'u')=='FIG' then
                       
                     error('parameter StateLevels required a value.')        
                       
@@ -157,66 +162,108 @@ if (~isempty(index)) then
                   elseif type(varargin(index(j)+1))==10  then
                       
                     error('Expected STATELEVELS to be one of these types: double, Instead its type was char.')
+                    end
                     
-                elseif length(varargin(index(j)+1))~=2 then
+                if length(levels)~=2 then
                     error ('Expected STATELEVELS to be of size 1x2')
-                                   
-                    
-                else
-                    levels=varargin(index(j)+1);
-                end
-                
-                
+                      end             
+               
                 if levels(2)<=levels(1) then
                      error('The state levels must be in increasing order.')
                      end
                   ///////  
                   
-                case {'MidPercentReferenceLevel'}
+                case {'MIDPERCENTREFERENCELEVEL'}
+
            
             if length(varargin) <=index(j) then
-                      error(strcat(['parameter MidPercentRefernceLevel required a value.']));
-                      
-                      
-                        elseif type(varargin(index(j)+1))==10 & varargin(index(j)+1)=='StateLevels' | varargin(index(j)+1)== 'Tolerance' then
-                      
-                    error('parameter MidPercentRefernceLevel required a value.')
-                      
-                      
-                      
-                  elseif type(varargin(index(j)+1))==10 then
-                      
-                    error('Expected MidPercentRefernceLevel to be one of these types: double, Instead its type was char.')
+                      error(strcat(['parameter MidPercentRefernceLevel required a value.'])); 
+                  end
+                  
+                  if  type(varargin(index(j)+1))==1 then
+                      midpercentval= varargin(index(j)+1);                                                           
+                        elseif type(varargin(index(j)+1))==10 & convstr(varargin(index(j)+1), 'u')=='STATELEVELS' | convstr(varargin(index(j)+1),'u')== 'TOLERANCE' | convstr(varargin(index(j)+1), 'u')=='FIG' then                     
+                    error('parameter MidPercentRefernceLevel required a value.') 
+                                
+                  elseif type(varargin(index(j)+1))==10 then                     
+                    error('Expected MidPercentRefernceLevel to be one of these types: double, Instead its type was char.')  
+                end
+                              
+                if length( midpercentval)~=1 then
+                    error ('Expected MidPercentRefernceLevel to be of size 1x1')                                  
+                end 
+                
+                
+            case {'FIG'}
+                
+                if length(varargin) <=index(j) then
+                      error(strcat(['parameter fig required a value.']));
+                  end
+                  
+                  if type(varargin(index(j)+1))==1 then
+                      error ('Expected fig to match one of these strings: on or off');
+                  
+                 elseif type(varargin(index(j)+1))==10 & convstr(varargin(index(j)+1), 'u')=='STATELEVELS' | convstr(varargin(index(j)+1), 'u')== 'TOLERANCE' | convstr(varargin(index(j)+1), 'u')=='MIDPERCENTREFERENCELEVEL' then                     
+                    error('parameter fig required a value.')                     
+                    else 
+                        fig=  convstr(varargin(index(j)+1), 'u');
+                       
+                    end 
                     
-                elseif length(varargin(index(j)+1))~=1 then
-                    error ('Expected MidPercentRefernceLevel to be of size 1x1')
-                    
-                else
-                    midpercentval= varargin(index(j)+1);
-                    end         
-                    
+               
+                     if fig == 'OFF' | fig == 'ON' then  
+        else 
+     error('Expected fig to match one of these strings: on or off');
+           end   
+  
+                      
+                   
+        case{'ON'} 
+            
+             if length(varargin) == 1 then
+                 error ('Unexpected input.')                     
+            
+              
+            elseif type(varargin(index(j)-1))==1 then
+                error ('Unexpected input.');            
+            elseif convstr(varargin(index(j)-1), 'u')~='FIG' then
+                error('Unexpected input');
+                end
+            
+         case{'OFF'}
+                       
+            if length(varargin) == 1 then
+                 error ('Unexpected input.')                     
+            
+              
+            elseif type(varargin(index(j)-1))==1 then
+                error ('Unexpected input.');            
+            elseif convstr(varargin(index(j)-1), 'u')~='FIG' then
+                error('Unexpected input');
+                end      
+                   
+                             
                    //////
-                case {'Tolerance'}
-                    
-                    
+                case {'TOLERANCE'}
+                   
             if length(varargin) <=index(j) then
                       error(strcat(['parameter Tolerance required a value"]));
+                 
+                  elseif type(varargin(index(j)+1))==1 then
+                     tolerance= varargin(index(j)+1); 
                       
-                  elseif type(varargin(index(j)+1))==10 & varargin(index(j)+1)== 'StateLevels' | varargin(index(j)+1)== 'MidPercentReferenceLevel' then
+                  elseif type(varargin(index(j)+1))==10 & convstr(varargin(index(j)+1), 'u')== 'STATELEVELS' | convstr(varargin(index(j)+1), 'u')== 'MIDPERCENTREFERENCELEVEL' | convstr(varargin(index(j)+1), 'u')=='FIG' then
                       
                     error('parameter Tolerance required a value.');
-                      
-                      
-                      
+                                           
                   elseif type(varargin(index(j)+1))==10  then
                       
                     error('Expected Tolerance to be one of these types: double, Instead its type was char.');
-                    
-                elseif length(varargin(index(j)+1))~=1 then
+                    end
+                  
+                if length(tolerance)~=1 then
                     error ('Expected Tolerance to be of size 1x1');
                     
-                else
-                    tolerance= varargin(index(j)+1);
                     end 
             
             else      
@@ -231,8 +278,7 @@ if (~isempty(index)) then
 tolerance=tolerance;
 
 if tolerance>=50 then
-    error('Expected Toleracne to be an array with all of the values < 50.')
-    
+    error('Expected Toleracne to be an array with all of the values < 50.')    
 end
 
 if tolerance>= midpercentval then
@@ -304,14 +350,34 @@ end
      
   midreference=midref;
   
-  if argn(1) == 1 then   // if the defined output is only 1, the it will return the graphical representation of                          //levels
+ 
+  if fig=='ON'  then   // if the defined output is only 1, the it will return the graphical representation of                          //levels
     
       
       
    //////
    
    if length(midcrossvalue)==0 then
-        plot(t,x, 'LineWidth',1, 'color', 'black')
+        plot(t,x, 'LineWidth',1, 'color', 'black' )
+
+plot(t,midref * ones(1, length(t)),'-r', 'LineWidth',0.5)
+ plot(t,mostupperbound * ones(1, length(t)),'--r', 'LineWidth',0.5)
+      
+      plot(t,levels(2) * ones(1, length(t)),'--k', 'LineWidth',0.5) 
+      
+      plot(t,upperbound * ones(1, length(t)),'--r', 'LineWidth',0.5)
+      
+    
+       
+       plot(t,lowerbound *ones(1, length(t)),'--g', 'LineWidth',0.5)
+       
+       plot(t,levels(1) * ones(1, length(t)),'--k', 'LineWidth',0.5)
+       
+       plot(t,mostlowerbound * ones(1, length(t)),'--g', 'LineWidth',0.5) 
+       
+       xlabel("Time (second)", "fontsize",3, "color", "black" )
+     ylabel("Level (Volts)", "fontsize",3, "color", "black" )  
+
         
         legends(["Signal";  "upper boundary"; "upper state"; "lower boundary"; "mid reference"; "upper boundary"; "lower state"; "lower boundary"],  [[1;1], [5;2], [1;2], [5;2], [5;1],  [3;2],[1;2], [3;2]], opt='?')
         

@@ -19,13 +19,7 @@ function bw= enbw (window, fs)
     // See also
     // Authors
     // Jitendra Singh
-  
-      
-  // run statelevels and midcross function before running risetime function.  
-
-    
-    
-    
+   
     
     if  type (window)~=1 then
         error ('Expected input number 1, WINDOW, to be one of these types: double, single..Isntead its type was char.' )

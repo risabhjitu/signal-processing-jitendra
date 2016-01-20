@@ -3,6 +3,7 @@ function [s, initialcross, finalcross, nextcross, midreference]= pulsesep(x, var
     // This function estimate pulse  separation between bilevel waveform pulses.
     // Calling Sequence
     // s=pulsesep(x)
+    // s=pulsesep(x, Fs)
     // s=pulsesep(x, t)
     // s=pulsesep (x, t, 'Polarity', pol)
     // s=pulsesep(x, t, 'MidPercentReferenceLevel', N )
@@ -10,20 +11,23 @@ function [s, initialcross, finalcross, nextcross, midreference]= pulsesep(x, var
     // s=pulsesep(x, t,'StateLevels', O)
     
     // [s initialcross finalcross nextcross midreference]=pulsesep(x)
+    // [s initialcross finalcross nextcross midreference]=pulsesep(x, Fs)
     // [s initialcross finalcross nextcross midreference]=pulsesep(x, t)
     // [s initialcross finalcross nextcross midreference]=pulsesep(x, t, 'Polarity', pol)
     // [s initialcross finalcross nextcross midreference]=pulsesep(x, t, 'MidPercentReferenceLevel', N )
     // [s initialcross finalcross nextcross midreference]= pulsesep(x, t, 'Tolerance', M)
     // [s initialcross finalcross nextcross midreference]= pulsesep(x, t,'StateLevels', O)
-    // 
+    // [s initialcross finalcross nextcross midreference]= pulsesep(x, t,'StateLevels', O, 'fig', on or off)
     //  
     // Parameters
     // x: real vector.
+    // Fs: specifies the sample rate, Fs, as a positive   scalar, where the first sample instant corresponds to a time of zero.
     // t: defiene instant sample time t as vector with same length of x, or specifies the sample rate, t, as a positive scalar.
     // Polarity: specify the polarity of the pulse as either 'positive' or 'negative', where the default value is 'positive'
     // MidPercentReferenceLevel: specify the mid percent reference leves as a percentage, default value of N is 50.
     // Tolerance: define the tolerance value as real scaler value, where default value of M is 2.0.
     // StateLevels:  define the lower and upper state levels as two element real vector. 
+    // fig: specify the logical input value to display figure as one of 'on' or 'off', where the default input in 'off'.
     // s: returns a vector of differences between the mid-crossings of each final negative-going transition of every positive-polarity pulse and the next positive-going transition.
     // initialcross: returns a vector of initial cross values of bilevel waveform transitions X
     // finalcross: returns a vector of final cross values of bilevel waveform transitions X
@@ -41,8 +45,8 @@ function [s, initialcross, finalcross, nextcross, midreference]= pulsesep(x, var
       
   // run statelevels and midcross function before running risetime function.  
 
-    
-    
+ 
+     
     if  length(varargin)==0 then
    varargin=varargin;
     end
@@ -59,62 +63,160 @@ end
 end  
 
 
-pol='Positive';
+pol='POSITIVE';
 polidx=[];
-
+fig='OFF'
+index_on=[];
 if (~isempty(sindex)) then
         for j=1:length(sindex)
-            select varargin(sindex(j))
-                case {'StateLevels'}                                 
-                case {'MidPercentReferenceLevel'}          
-               case {'Tolerance'} 
-                   
-               case{'Polarity'}
+            select convstr(varargin(sindex(j)), 'u') // validating input variable names
+            case {'STATELEVELS'} 
+                      if length(varargin) <=sindex(j) then
+                      error(strcat(['parameter StateLevels required a value']));
+                  end
+                  
+                  if type(varargin(sindex(j)+1))==1 then
+                      levels=varargin(sindex(j)+1); 
+                      
+                   elseif type(varargin(sindex(j)+1))==10 & convstr(varargin(sindex(j)+1), 'u')=='MIDPERCENTREFERENCELEVEL' |  convstr(varargin(sindex(j)+1),'u')== 'TOLERANCE' | convstr(varargin(sindex(j)+1), 'u')=='FIG' | convstr(varargin(sindex(j)+1), 'u')=='POLARITY'  then
+                      
+                    error('parameter StateLevels required a value.')        
+                  
+                      
+                  elseif type(varargin(sindex(j)+1))==10  then
+                      
+                    error('Expected STATELEVELS to be one of these types: double, Instead its type was char.')
+                end
+                                                
+                case {'MIDPERCENTREFERENCELEVEL'}    
+                         if length(varargin) <=sindex(j) then
+                      error(strcat(['parameter MidPercentRefernceLevel required a value.'])); 
+                  end
+                  
+                  if  type(varargin(sindex(j)+1))==1 then
+                      midpercentval= varargin(sindex(j)+1);                                                           
+                        elseif type(varargin(sindex(j)+1))==10 & convstr(varargin(sindex(j)+1), 'u')=='STATELEVELS' | convstr(varargin(sindex(j)+1),'u')== 'TOLERANCE' | convstr(varargin(sindex(j)+1), 'u')=='FIG' | convstr(varargin(sindex(j)+1), 'u')=='POLARITY' then                     
+                    error('parameter MidPercentRefernceLevel required a value.') 
+                                
+                  elseif type(varargin(sindex(j)+1))==10 then                     
+                    error('Expected MidPercentRefernceLevel to be one of these types: double, Instead its type was char.')  
+                end
 
-                   if length(varargin)<j+1 then
+               case {'TOLERANCE'} 
+                  
+                            if length(varargin) <=sindex(j) then
+                      error(strcat(['parameter Tolerance required a value"]));
+                 
+                  elseif type(varargin(sindex(j)+1))==1 then
+                     tolerance= varargin(sindex(j)+1); 
+                      
+                  elseif type(varargin(sindex(j)+1))==10 & convstr(varargin(sindex(j)+1), 'u')== 'STATELEVELS' | convstr(varargin(sindex(j)+1), 'u')== 'MIDPERCENTREFERENCELEVEL' | convstr(varargin(sindex(j)+1), 'u')=='FIG' | convstr(varargin(sindex(j)+1), 'u')=='POLARITY' then
+                      
+                    error('parameter Tolerance required a value.');
+                                           
+                  elseif type(varargin(sindex(j)+1))==10  then
+                      
+                    error('Expected Tolerance to be one of these types: double, Instead its type was char.');
+                end  
+                 
+                   
+                   
+               case {'FIG'}
+                
+                if length(varargin) <=sindex(j) then
+                      error(strcat(['parameter fig required a value.']));
+                  end
+                  
+                  if type(varargin(sindex(j)+1))==1 then
+                      error ('Expected fig to match one of these strings: on or off');
+                  
+                 elseif type(varargin(sindex(j)+1))==10 & convstr(varargin(sindex(j)+1), 'u')=='STATELEVELS' | convstr(varargin(sindex(j)+1), 'u')== 'TOLERANCE' | convstr(varargin(sindex(j)+1), 'u')=='MIDPERCENTREFERENCELEVEL' | convstr(varargin(sindex(j)+1), 'u')=='POLARITY' then                     
+                    error('parameter fig required a value.')                     
+                    else 
+                        fig=  convstr(varargin(sindex(j)+1), 'u');
+                       
+                    end 
+                    
+               
+                     if fig == 'OFF' | fig == 'ON' then  
+        else 
+     error('Expected fig to match one of these strings: on or off');
+           end   
+  
+                      
+                   
+        case{'ON'} 
+            index_on=sindex(j)
+             if length(varargin) == 1 then
+                 error ('Unexpected input.')                     
+            
+              
+            elseif type(varargin(sindex(j)-1))==1 then
+                error ('Unexpected input.');            
+            elseif convstr(varargin(sindex(j)-1), 'u')~='FIG' then
+                error('Unexpected input');
+                end
+            
+         case{'OFF'}
+                       
+            if length(varargin) == 1 then
+                 error ('Unexpected input.')                     
+            
+              
+            elseif type(varargin(sindex(j)-1))==1 then
+                error ('Unexpected input.');            
+            elseif convstr(varargin(sindex(j)-1), 'u')~='FIG' then
+                error('Unexpected input');
+                end      
+              
+              
+              
+                   
+               case{'POLARITY'}
+
+                   if length(varargin)<=sindex(j) then
                        error ('Parameter polarity requires a value.')
-                   
-                   
-                   elseif type( varargin(sindex(j)+1))==1 then
+                       end
+                                      
+                   if type( varargin(sindex(j)+1))==1 then
                        error ('POLARITY must be either ''Positive'' or ''Negative''.')
                        
-                     elseif  varargin(sindex(j)+1)== 'StateLevels' | varargin(sindex(j)+1)== 'MidPercentReferenceLevel' | varargin(sindex(j)+1)== 'Tolerance' then
+                     elseif  type(varargin(sindex(j)+1))==10 & convstr(varargin(sindex(j)+1), 'u')== 'STATELEVELS' | convstr(varargin(sindex(j)+1), 'u')== 'MIDPERCENTREFERENCELEVEL' | convstr(varargin(sindex(j)+1), 'u')== 'TOLERANCE' | convstr(varargin(sindex(j)+1), 'u')=='FIG' then
                          
                          error ('Parameter polarity requires a value.')
                          
                    
-                    elseif  varargin(sindex(j)+1)~= 'Positive' & varargin(sindex(j)+1)~= 'Negative' then
+                    elseif  convstr(varargin(sindex(j)+1), 'u') ~= 'POSITIVE' & convstr(varargin(sindex(j)+1), 'u')~= 'NEGATIVE' then
                       
                        error ('POLARITY must be either ''Positive'' or ''Negative''.');
                        
                    else 
-                       //varargin (sindex(j))=null(); 
                        polidx=sindex(j);                    
                    end 
                 
                 
-               case {'Positive'}
+               case {'POSITIVE'}
                    
                    if j==1 then
                        error(strcat(['Unexpected option:', " ", varargin(sindex(j))]));
-                   elseif varargin(sindex(j)-1)~= 'Polarity'
+                   elseif convstr(varargin(sindex(j)-1), 'u') ~= 'POLARITY'
                        error(strcat(['Unexpected option:', " ", varargin(sindex(j))]));
                    else
                         polinputidx= sindex(j);
                        
-                        pol=varargin (sindex(j)) ;                        
+                        pol= convstr(varargin (sindex(j)), 'u') ;                        
                        end
                        
-                       case {'Negative'}
+                       case {'NEGATIVE'}
                    
                    if j==1 then
                        error(strcat(['Unexpected option:', " ", varargin(sindex(j))]));
-                   elseif varargin(sindex(j)-1)~= 'Polarity'
+                   elseif convstr(varargin(sindex(j)-1), 'u') ~= 'POLARITY'
                        error(strcat(['Unexpected option:', " ", varargin(sindex(j))]));
                    else
                         polinputidx= sindex(j);
                         
-                         pol=varargin (sindex(j)) ;                          
+                         pol= convstr(varargin (sindex(j)), 'u') ;                         
                        end    
                                            
             else      
@@ -123,138 +225,117 @@ if (~isempty(sindex)) then
         end // for
     end // if
 // 
-// disp(varargin)   
+
+if length(index_on)>0 then
+    varargin(index_on)='OFF';    
+end
+
 
 if length(polidx)>0 then
-    varargin (polidx)=null(); 
+    varargin(polidx)=null(); 
      varargin(polinputidx-1)=null();
 end
 
 
-   [crossval midref levels t tolerance Tinput]= midcross(x, varargin(:)); 
-   
-    
+   [crossval midref levels t tolerance]= midcross(x, varargin(:)); 
+     
      upperbound= levels(2)- (tolerance/100)*(levels(2)-levels(1));
  mostupperbound=levels(2)+ (tolerance/100)*(levels(2)-levels(1));
   lowerbound= levels(1)+ (tolerance/100)*(levels(2)-levels(1));
   mostlowerbound=levels(1)- (tolerance/100)*(levels(2)-levels(1));  
-  
-  if length(Tinput)==length(x) then
-      crossvalue=crossval;
-  else 
-      crossvalue=1+(crossval*Tinput);
-  end
-  
-  
-
-  maxx=[];
-  minn=[]; 
- 
- if length(crossval)>= 2 then
-     
-     for i =1:(length(crossval)-1)
-        
-          maxx(i)= max(x(ceil(crossvalue(i)):floor(crossvalue(i+1))))
-          
-         minn(i)= min(x(ceil(crossvalue(i)):floor(crossvalue(i+1))))
-         end   
-     end
-
-
-pos_idx=[];
-neg_idx=[];
-
-    
-    if  length(maxx)>=1  then
-        pos= 100*((maxx-levels(2))/(levels(2)-levels(1)));
-        pos_idx=find(pos>0)
-        
-    end
-  
-  if length(minn)>=1 then
-       neg= 100*((minn-levels(1))/(levels(2)-levels(1)));
-       neg_idx=find(neg<0)
-  end
-  
 
   int_pos=[];
  final_pos=[];
   int_neg=[];
   final_neg=[]; 
+ nextcross_pos=[];
+nextcross_neg=[];
+
+if length(crossval)>=2 then
+
+if x(1)>midref then
+  
+    int_pos=crossval(2:2:$);
+    final_pos=crossval(3:2:$);
+    int_neg=crossval(1:2:$);
+    final_neg=crossval(2:2:$);
+
+else
+    
+     int_pos=crossval(1:2:$);
+    final_pos=crossval(2:2:$);
+    int_neg=crossval(2:2:$);
+    final_neg-crossval(3:2:$);
+    
+end
+
+
+
+if length(int_pos)>=2 then
+  nextcross_pos=int_pos(2:$);
+end
+
+if length(int_neg)>=2 then
+   nextcross_neg=int_neg(2:$); 
+   end  
+
+
+
+
+if length(int_pos)>length(final_pos) then
+    int_pos=int_pos(1:($-1))
+elseif length(int_neg)>length(final_neg) then
+    int_neg=int_neg(1:($-1))
+    end
+
+
+
+
+
+
+ if length(int_pos)>length(nextcross_pos) then
+     int_pos=int_pos(1:($-1))
+
+     end
+ if length(final_pos)>length(nextcross_pos)
+     final_pos=final_pos(1:($-1))
+   
+ end
+ 
+ if length(int_neg)>length(nextcross_neg) then
+      int_neg=int_neg(1:($-1));
+  end
+  
+  if length(final_neg)>length(nextcross_neg) then
+      final_neg=final_neg(1:($-1));
+ end
  
 
- 
- if length(pos_idx)>0 then
-     int_pos=crossval(pos_idx);
-      final_pos=crossval(pos_idx+1);
-      
- end 
- 
- if length(neg_idx)>0 then
-      int_neg=crossval(neg_idx);
-      final_neg=crossval(neg_idx+1);
-  end
+end
+
+  
   
 s=[];
    
         
-      if pol=='Positive' then
-          if length(int_pos)>=2 then
-              
-          if int_pos($)~=crossval($) & final_pos($)~=crossval($) then
-              int_pos=[int_pos, crossval($)]
-              s=int_pos(2:$)-final_pos(1:$);
-              initialcross=int_pos (1:($-1));
+      if pol=='POSITIVE' then
+         s=nextcross_pos-final_pos;
+              initialcross=int_pos;
           finalcross=final_pos;
-          nextcross=int_pos(2:$);
+          nextcross=nextcross_pos;
               
      else
         
-        s=int_pos(2:$)-final_pos(1:($-1));
-        
-          initialcross=int_pos(1:($-1));
-          finalcross=final_pos(1:($-1));
-          nextcross=int_pos(2:$);
-          end
-          
-      else
- 
-          s=[];
-           initialcross=[];
-          finalcross=[];
-          nextcross=[];
-          end
-          
-      else
-          
-          if length(int_neg)>=2 then
-              
-           if int_neg($)~=crossval($) & final_neg($)~=crossval($) then
-              int_neg=[int_neg, crossval($)]
-              s=int_neg(2:$)-final_neg(1:$);
-              initialcross=int_neg(1:($-1));
+       s=nextcross_neg-final_neg;
+              initialcross=int_neg;
           finalcross=final_neg;
-          nextcross=int_neg(2:$);
-              
-     else
-        s=int_neg(2:$)-final_neg(1:($-1));
-        
-          initialcross=int_neg(1:($-1));
-          finalcross=final_neg(1:($-1));
-          nextcross=int_neg(2:$);
-          end
-          
-      else
-           s=[];
-           initialcross=[];
-          finalcross=[];
-          nextcross=[];
-          end
+          nextcross=nextcross_neg;
+               
       end
  
 midreference=midref;
 
-   if argn(1) == 1 then   // if the defined output is only 1, the it will provide the graphical representation of                          //levels
+   if fig=='ON' then   // if the defined output is only 1, the it will provide the graphical representation of                          //levels
        
       if length(s)==0 then
           
@@ -296,7 +377,7 @@ midreference=midref;
 
    col=-10*ones(s);
 
-    midc=[nextcross, finalcross];
+    midc=[nextcross, finalcross, initialcross];
     midcross=gsort(midc, 'c','i' )
  
      plot(midcross, midreference*ones(midcross), "r*", 'MarkerSize',15);
