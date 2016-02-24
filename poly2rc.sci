@@ -1,0 +1,64 @@
+function [kr, R0]=poly2rc(a, efinal)
+    
+//poly2rc function  convert prediction polynomial to reflection coefficients.
+// Calling Sequence
+// kr = poly2rc(a)
+// [kr, R0] = rc2poly(a, efinal)
+
+// Parameters
+// a: prediction polynomial. 
+// efinal: final prediction error.
+// kr: Return refelection coefficient.
+// R0: Return the  zero lag autocorrelation, R0.
+ 
+// Examples
+//X = [7 6 5 8 3 6]
+// [kr, R0] = poly2rc(X)
+//
+// See also
+//
+// Author
+// Jitendra Singh
+// 
+ 
+          if ~isvector (a) then
+                    error ('The prediction polynomial must be stored in a vector.')
+          end
+                   
+    if argn(2)==1 | isempty(efinal) then
+              efinal=0;
+    end
+          
+     if length(a)<=1 then
+                   kr= [];
+                   R0=efinal; 
+         end
+         
+         if a(1) ==0 then
+                   error ('Leading coefficient cannot be zero.')
+         end
+         a=a(:)./a(1);
+         
+         n=length(a)-1;
+         e=zeros(n,1);
+         e(n)=efinal;
+         kr(n)=a($);
+         a=a';
+           
+         for j= (n-1):-1:1
+
+                   ee=a($)
+                 
+                  a = (a-kr(j+1)*flipdim(a,2,1))/(1-kr(j+1)^2);
+                                               
+                      a=a(1:$-1)
+                   kr(j)=a($);
+         
+      econj=conj(ee)
+    econj=econj'
+    e(j) = e(j+1)/(1.-(econj.*ee));      
+                              
+         end
+       
+     R0 = e(1)./(1-abs(kr(1))^2);            
+endfunction
