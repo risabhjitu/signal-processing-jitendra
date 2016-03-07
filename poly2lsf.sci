@@ -17,7 +17,7 @@ function lsf=poly2lsf(a)
 // Jitendra Singh
 
     
-    if ~isvector(a) then
+if (size(a,1) > 1) & (size(a,2) > 1)
         error('The prediction polynomial must be stored in a vector.')        
     end
     

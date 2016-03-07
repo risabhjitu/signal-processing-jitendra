@@ -22,7 +22,7 @@ function [a, efinal] = rc2poly(kr, R0)
 // 
 
 
-if ~isvector(kr) then
+if (size(kr,1) > 1) & (size(kr,2) > 1)
     error ('The reflection coefficients must be stored in a vector.')
 end
 
