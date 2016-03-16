@@ -157,14 +157,21 @@ if length(bounds)~=2 then
 end
 
 
-if bounds(2)>0 | bounds (1)>0 then
+//if bounds(2)>0 | bounds (1)>0 then
+//
+//if bounds(2)>bounds(1) then
+//     lower=bounds(1)
+// upper=bounds(2);
+//    else
+//    error('BOUNDS must be strictly increasing.')
+//end
+//end
 
-if bounds(2)>bounds(1) then
-     lower=bounds(1)
- upper=bounds(2);
-    else
+if bounds(2)<=bounds(1) then
     error('BOUNDS must be strictly increasing.')
-end
+else
+    lower=bounds(1);
+    upper=bounds(2);
 end
 
 if  bounds(2)==0 & bounds (1)==0 then
@@ -177,11 +184,6 @@ end
      error('Expected fig to match one of these strings: on or off');
            end
 
- 
-
-
-  
-  
   denomm = upper-lower;
   if denomm==0 then
     denomm = 2.220D-16 ;
