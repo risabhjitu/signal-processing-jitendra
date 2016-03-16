@@ -24,6 +24,8 @@ function [k,R0] = ac2rc(R)
 
  // call function "levin" before running this function
 if isvector(R) then
+    R=R(:);
+
     [x,y,z] = levin(R)
 k=z;
 R0=R;
@@ -33,6 +35,7 @@ else
     
     for i=1:n(2)
         r=R(:,i);
+ 
      [x,y, z] = levin(r) 
          
  kk(:,i)= z; 
