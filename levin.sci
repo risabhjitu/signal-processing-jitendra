@@ -13,14 +13,19 @@ function [ar, sigma2,rc] = levin(r);
 //    //  ar     :Auto-Regressive model parameters
 //    //  sigma2 :Scale constant
 //    //  rc     :Reflection coefficients
+if length(r)==1 then
+    ar=1;
+    sigma2=r;
+    rc=[];
+    else
+    
 
 
     ar = 0;
     aj(1) = 1;
     ej = r(1);  
     rc = [];
- 
-        p=length(r)-1
+     p=length(r)-1
  
    
     for j=1:p,
@@ -49,4 +54,5 @@ function [ar, sigma2,rc] = levin(r);
         ej = ej1;
     end
     sigma2 = sqrt(ej1);
+    end
     endfunction
