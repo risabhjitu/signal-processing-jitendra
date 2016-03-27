@@ -39,7 +39,7 @@ function [midcrossvalue, midreference, levels, t, tolerance, Tinput]= midcross(x
     // See also
     // Authors
     // Jitendra Singh
-  
+ 
     
  if length(x) < 2 then // checking the length of input datasat
   error('X must be a vector with more than one element.'); // if length of X is less 2, it will give error
@@ -336,7 +336,11 @@ end
       iX = find(x(ia:ib-1)>= midref & midref > x(ia+1:ib));
       iRMid(i) = iX(1) + ia - 1;
     end
-     end
+ end
+x=x(:);
+x=x';
+t=t(:);
+t=t';
 
   if numtrans > 0
     // interpolation to get instant values
