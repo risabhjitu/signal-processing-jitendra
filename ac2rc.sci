@@ -23,6 +23,11 @@ function [k,R0] = ac2rc(R)
 // 
 
  // call function "levin" before running this function
+
+if or(type(R==10)) then
+    error ('Input arguments must be double.')
+end
+ 
 if isvector(R) then
     R=R(:);
 
