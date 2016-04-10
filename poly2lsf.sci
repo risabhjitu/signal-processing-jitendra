@@ -16,6 +16,11 @@ function lsf=poly2lsf(a)
 // Author
 // Jitendra Singh
 
+      if or(type(a)==10) then
+    error ('The polynomial must have all roots inside of the unit circle.')
+end  
+
+
     
 if (size(a,1) > 1) & (size(a,2) > 1)
         error('The prediction polynomial must be stored in a vector.')        

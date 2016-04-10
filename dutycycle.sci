@@ -52,7 +52,9 @@ function [d, initialcross, finalcross, nextcross, midreference]= dutycycle(x, va
     
     
     
-    
+     if or(type(x)==10) then
+    error ('Input arguments must be double.')
+end  
     
     
    

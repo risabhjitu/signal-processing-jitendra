@@ -17,8 +17,13 @@ function k=lar2rc(g)
 // Author
 // Jitendra Singh
 //     
+
+  if or(type(g)==10) then
+    k=ones(size(g,1), size(g,2))
+else
     if ~isreal(g) then
         error('Log area ratios must be real.')
     end
     k=-(tanh(-g/2));
+    end
 endfunction

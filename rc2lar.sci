@@ -14,7 +14,13 @@ function g=rc2lar(k)
 //
 // Author
 // Jitendra Singh
-//        
+//  
+
+      if or(type(k)==10) then
+    error ('All reflection coefficients should have magnitude less than unity.  ')
+end 
+
+    
     
   if ~isreal(k) then
         error('Log area ratios must be real.')

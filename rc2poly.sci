@@ -20,7 +20,9 @@ function [a, efinal] = rc2poly(kr, R0)
 // Author
 // Jitendra Singh
 // 
-
+       if or(type(kr)==10) then
+    error ('Input arguments must be double.')
+end 
 
 if (size(kr,1) > 1) & (size(kr,2) > 1)
     error ('The reflection coefficients must be stored in a vector.')

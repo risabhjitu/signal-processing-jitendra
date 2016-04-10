@@ -20,6 +20,10 @@ function R=rc2ac(k, R0)
 //             
           
  // load rc2poly and rlevinson before running this function         
+ 
+       if or(type(k)==10) then
+    error ('Input arguments must be double.')
+end 
      
  if (size(k,1) > 1) & (size(k,2) > 1)
     error ('The reflection coefficients must be stored in a vector.')

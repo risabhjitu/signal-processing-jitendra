@@ -19,7 +19,10 @@ function bw= enbw (window, fs)
     // See also
     // Authors
     // Jitendra Singh
-   
+    
+     if or(type(window)==10) then
+    error ('Input arguments must be double.')
+end 
     
     if  type (window)~=1 then
         error ('Expected input number 1, WINDOW, to be one of these types: double, single..Isntead its type was char.' )

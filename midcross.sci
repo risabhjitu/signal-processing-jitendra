@@ -39,7 +39,9 @@ function [midcrossvalue, midreference, levels, t, tolerance, Tinput]= midcross(x
     // See also
     // Authors
     // Jitendra Singh
- 
+ if or(type(x)==10) then
+    error ('Input arguments must be double.')
+end
     
  if length(x) < 2 then // checking the length of input datasat
   error('X must be a vector with more than one element.'); // if length of X is less 2, it will give error

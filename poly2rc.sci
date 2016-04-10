@@ -20,8 +20,12 @@ function [kr, R0]=poly2rc(a, efinal)
 // Author
 // Jitendra Singh
 // 
+      if or(type(a)==10) then
+    error ('Input arguments must be double.')
+end  
+
  
-          if (size(a,1) > 1) & (size(a,2) > 1)
+ if (size(a,1) > 1) & (size(a,2) > 1)
                     error ('The prediction polynomial must be stored in a vector.')
           end
                    

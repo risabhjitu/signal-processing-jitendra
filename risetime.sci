@@ -41,7 +41,11 @@ function [r, lowercrossvalue, uppercrossvalue, lowerreference, upperreference]=r
   
     
     
-  // run statelevels and midcross function before running risetime function.  
+  // run statelevels and midcross function before running risetime function. 
+  
+    if or(type(x)==10) then
+    error ('Input arguments must be double.')
+end  
     
     if  length(varargin)==0 then  // if the no of input is 0, then specify the default values to input parameter.
         [levels hist]=statelevels(x);

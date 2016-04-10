@@ -16,7 +16,11 @@ function a=lsf2poly(lsf)
 // Author
 // Jitendra Singh
 //  
-    
+ 
+      if or(type(lsf)==10) then
+    error ('Input arguments must be double.')
+end  
+
  
  if ~isreal(lsf) then
      error ('Line spectral frequencies must be real.')

@@ -43,6 +43,10 @@ function [w, initialcross, finalcross, midreference]=pulsewidth(x, varargin)
   
       
   // run statelevels and midcross function before running risetime function.  
+  
+        if or(type(x)==10) then
+    error ('Input arguments must be double.')
+end 
  
     
     if  length(varargin)==0 then
