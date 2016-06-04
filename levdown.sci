@@ -1,6 +1,5 @@
 function [a,e]=levdown(a, efinal)
-    
-  
+
     
                    ee=a($);
                  

@@ -16,6 +16,10 @@ function a=lsf2poly(lsf)
 // Author
 // Jitendra Singh
 //  
+
+if isempty(lsf) then
+          a=[];
+          else
  
       if or(type(lsf)==10) then
     error ('Input arguments must be double.')
@@ -29,6 +33,13 @@ end
  if max(lsf)>%pi | min(lsf)<0 then
      error ('Line spectral frequencies must be between 0 and pi.')
   end
+  
+  
+  if size(lsf,1)==1 & size(lsf,2) then
+            
+            error('Input should be vector of length more than one or matrix.')
+            end
+
   
    if isvector(lsf) then
        lsf=lsf(:);
@@ -69,5 +80,6 @@ end
        aaa(i,:)=aa;
    end
    a=aaa;
+   end
   
 endfunction
