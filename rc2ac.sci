@@ -33,6 +33,9 @@ end
      if argn(2)<2 then // checking of number of input arguments, if argn(2)<2 execute error.
               error ('Not enough input argument, define zero lag autocorrelation, R0.')
     end 
+    if or(k(2:$)==1) then
+        error('Algorithm falied for this case. At least one of the reflection coefficients is equal to one.')
+    end
   
     [a, efinal]=rc2poly (k, R0);
     R=rlevinson(a, efinal)    

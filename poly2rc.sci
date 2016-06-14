@@ -20,6 +20,11 @@ function [kr, R0]=poly2rc(a, efinal)
 // Author
 // Jitendra Singh
 // 
+
+if isempty(a) then
+    kr=[];
+    R0=0;
+else
       if or(type(a)==10) then
     error ('Input arguments must be double.')
 end  
@@ -64,5 +69,6 @@ end
                               
          end
        
-     R0 = e(1)./(1-abs(kr(1))^2);            
+     R0 = e(1)./(1-abs(kr(1))^2);   
+     end         
 endfunction

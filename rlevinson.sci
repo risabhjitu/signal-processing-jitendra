@@ -26,6 +26,13 @@ function [R, U, kr, e] = rlevinson(a, efinal)
 // Jitendra Singh
 //   
      
+     
+      if or(type(a)==10) then
+    error ('Input arguments must be numeric.')
+end  
+
+     
+     
     if argn(2)<2 then // checking of number of input arguments, if argn(2)<2 execute error.
               error ('Not enough input argument, define final prediction error.')
     end 
@@ -56,7 +63,7 @@ end
       for i=n-1:-1:1 // start levinson down
           
          ee=a($)
-               
+           
           a = (a-Kr(i+1)*flipdim(a,2,1))/(1-Kr(i+1)^2);
                                                
            a=a(1:$-1)
@@ -74,9 +81,15 @@ end
               
            end  // end of levinson down estimation
             e=e';
+ 
+ if  abs(a(2))==1 then
+           e1=%nan
+ else
+       e1=e(1)/(1-abs(a(2)^2));     
+ end
    
           
- e1=e(1)/(1-abs(a(2)^2));
+
  U(1,1)=1;
  kr=conj(U(1,2:$))
  kr=kr';

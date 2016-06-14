@@ -19,7 +19,7 @@ function k=lar2rc(g)
 //     
 
   if or(type(g)==10) then
-    k=ones(size(g,1), size(g,2))
+    k=ones(1, length(g))
 else
     if ~isreal(g) then
         error('Log area ratios must be real.')
