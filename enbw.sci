@@ -20,6 +20,17 @@ function bw= enbw (window, fs)
     // Authors
     // Jitendra Singh
     
+      if isreal(window) then
+          else
+    error ('Input arguments window should be real.')
+end 
+
+      if isvector(window) then
+          else
+    error ('Input arguments window should be a vector.')
+end 
+   
+    
      if or(type(window)==10) then
     error ('Input arguments must be double.')
 end 

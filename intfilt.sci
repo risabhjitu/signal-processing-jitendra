@@ -40,39 +40,56 @@ function [h, a]= intfilt(R, L, freqmult)
                              typ='b';
                              end
   
-         end
-         
+     end
+     
+     if freqmult==0 then
+         h=repmat(%nan,[1,(2*R*L-1)])
+         a=1;
+         else
+     
     
      //typ(1)=='b' | typ(1)=='B'
      
          if convstr(typ(1), 'u') =='B' then
                    n=2*R*L-1;
+                   
                  
                    if freqmult==1 then
                              M=[R R 0 0];
                              F= [0 1/(2*R) 1/(2*R) 0.5];
                    else
                              M=R*[1 1];
-        F=[0 98/2/R];
+                             
+                  if type(freqmult)==10 then           
+               F=[0 98/2/R];
+           else
+               F=[0 freqmult/2/R]
+               end
         
         for f=(1/R):(1/R):.5,
+            
+            if type(freqmult)==10 then
             F=[F f-(98/2/R) f+(98/2/R)]; 
+        else
+            F=[F f-(freqmult/2/R) f+(freqmult/2/R)]; 
+            end
+            
             M=[M 0 0];
         end;
 
         if (F(length(F))>.5),
             F(length(F))=.5;
         end;
-    end
-    
-       // h=firls(n-1,F*2,M);
-        
+    end      
         N=n-1; F=F*2; M=M
  
  
 if (max(F)>1) | (min(F)<0)
     error('Frequencies in F must be in range [0,1]')
 end
+
+
+
 
 if ((length(F)-fix(length(F)./2).*2)~=0)
     error('Argument F should of even length');
@@ -149,7 +166,18 @@ Nodd = N-fix(N./2).*2;
         b0=0;      
     end;
     b=zeros(size(k,1),size(k,2));
+    
+    dd=diff(F);
+    
+    if or(dd==0) & R==1 then
+       
+        h=repmat(%nan,[1,n])
+        a=1
+        
+        else
     for s=1:2:length(F),
+
+        
         m=(M(s+1)-M(s))/(F(s+1)-F(s));    
         b1=M(s)-m*F(s);                   
         if Nodd
@@ -191,7 +219,8 @@ Nodd = N-fix(N./2).*2;
         h=[a(L+1:-1:2)/2; a(1); a(2:L+1)/2].';
     else
         h=.5*[flipud(a); a].';
-    end;    
+    end;  
+     end;  
           
   //typ(1)=='l' | typ(1)=='L' 
         
@@ -236,7 +265,9 @@ else
          end
          a=1;
          
-         end
+    
+ end
+ end
                             
 endfunction
 

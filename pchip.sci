@@ -31,19 +31,30 @@ if argn(2)==3 & ~isreal(xx)
 end
 
 
-nn=size(y,1);
+nn=[size(y,1),size(y,2)];
 
-h = diff(x); m = prod(nn);
+h = diff(x); 
 
+m = prod(nn);
+
+disp(h)
+disp(m)
 
 
 delta = diff(y,1,2)./repmat(h,m,1);
 
 slopes = zeros(size(y,1),size(y,2));
+disp(nn)
+disp(m)
+disp(delta)
+disp(slopes)
+
 
 for r = 1:m
      if isreal(delta)
-      slopes(r,:) = pchips(x,y(r,:),delta(r,:));
+      //slopes(r,:) = pchips(x,y(r,:),delta(r,:));
+     d= pchips(x,y(r,:),delta(r,:));
+     disp(d)
      else
       realslopes = pchips(x,y(r,:),real(delta(r,:)));   
       imagslopes = pchips(x,y(r,:),imag(delta(r,:)));
@@ -109,9 +120,10 @@ end
    sizexx = size(xx)
    
    if d>1
-   xs = reshape(xs(ones(d,1),:),1,d*lx);
+   xs = matrix(xs(ones(d,1),:),1,d*lx);
    idx = d*idx; temp = (-d:-1).';
-   idx = reshape(1+idx(ones(d,1),:)+temp(:,ones(1,lx)), d*lx, 1 );
+   idx = matrix(1+idx(ones(d,1),:)+temp(:,ones(1,lx)), d*lx, 1 );
+   
   else
    if length(sizexx)>1, dd = []; else dd = 1; end
 end
@@ -129,6 +141,8 @@ if ~isempty(nogoodxs) & k==1 & l>1
    v = matrix(v,d,lx); v(:,nogoodxs) = NaN;
 end
 v = matrix(v,[dd,sizexx]); 
+
+v=matrix(v,size(v,1), size(v,3));
    
 end
     
