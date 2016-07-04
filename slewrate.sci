@@ -45,7 +45,14 @@ function [s, lowercrossvalue, uppercrossvalue, lowerreference, upperreference]=s
 
          if or(type(x)==10) then
     error ('Input arguments must be double.')
-end   
+end  
+
+if size(x,1)==1 | size (x,2)==1 then
+    else
+    error ('Argument X must be vector.')
+end
+
+ 
     
    if  length(varargin)==0 then  // if the no of input is 0, then specify the default values to input parameter.
         [levels hist]=statelevels(x);
