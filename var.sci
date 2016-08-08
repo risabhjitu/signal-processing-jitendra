@@ -21,6 +21,10 @@ function y = var(x,w,dim)
     // Jitendra Singh
   
     if argn(2)==1 then
+        
+        if type(x)==10 then
+            x=ascii(x)
+            end
         if size(x,1)==1 |size(x,2)==1 then
                    sd=stdev(x)
                else 
