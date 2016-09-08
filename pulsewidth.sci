@@ -270,7 +270,7 @@ else
      int_pos=crossval(1:2:$);
     final_pos=crossval(2:2:$);
     int_neg=crossval(2:2:$);
-    final_neg-crossval(3:2:$);
+    final_neg=crossval(3:2:$);
     
 end
 
